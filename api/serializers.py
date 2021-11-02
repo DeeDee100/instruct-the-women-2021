@@ -62,15 +62,16 @@ class ProjectSerializer(serializers.ModelSerializer):
         i = 0
         while i < leng_pack:
             if (packages[i]['name'], packages[i]['version']) in dic_pack.items():
+                projeto.delete()
                 raise serializers.ValidationError("Pacote com o mesmo nome")
-            package = PackageRelease.objects.create(name=packages[i]['name'], version=packages[i]['version'], project=projeto)
-            dic_pack[packages[i]['name']] = packages[i]['version']
-            i += 1
+            else:
+                package = PackageRelease.objects.create(name=packages[i]['name'], version=packages[i]['version'], project=projeto)
+                dic_pack[packages[i]['name']] = packages[i]['version']
+                i += 1
         
         projeto.save()
         #print(packages[0]['version'])
         #[{'name': 'Django', 'version': '3.2.8'}, {'name': graphene, 'version': 2}]
-
 
         return projeto
   
