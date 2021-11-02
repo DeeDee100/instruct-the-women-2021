@@ -39,10 +39,6 @@ class PackageSerializer(serializers.ModelSerializer):
                 data['version'] = last
                 return data
 
-
-
-
-
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
@@ -60,14 +56,15 @@ class ProjectSerializer(serializers.ModelSerializer):
         
         
         packages = validated_data["packages"]
-        projeto = Project.objects.create(name=validated_data["name"])
-        #package = PackageRelease.objects.create(name=packages[0]['name'], version=packages[0]['version'], project=projeto)
-        #print(f"Versao: {len(packages)}")
-        
+        projeto = Project.objects.create(name=validated_data["name"])       
+        dic_pack = {}
         leng_pack = len(packages)
         i = 0
         while i < leng_pack:
+            if (packages[i]['name'], packages[i]['version']) in dic_pack.items():
+                raise serializers.ValidationError("Pacote com o mesmo nome")
             package = PackageRelease.objects.create(name=packages[i]['name'], version=packages[i]['version'], project=projeto)
+            dic_pack[packages[i]['name']] = packages[i]['version']
             i += 1
         
         projeto.save()
