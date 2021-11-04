@@ -6,6 +6,7 @@ import json
 from rest_framework.renderers import JSONRenderer
 
 
+
 class PackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PackageRelease
@@ -33,7 +34,7 @@ class PackageSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({"error": "One or more packages doesn't exist"})
         else:
             last = latest_version(data["name"])
-            if last == "None":
+            if last == None:
                 raise serializers.ValidationError({"error": "One or more packages doesn't exist"})
             else:
                 data['version'] = last
@@ -57,16 +58,16 @@ class ProjectSerializer(serializers.ModelSerializer):
         
         packages = validated_data["packages"]
         projeto = Project.objects.create(name=validated_data["name"])       
-        dic_pack = {}
+        listaPack = []
         leng_pack = len(packages)
         i = 0
         while i < leng_pack:
-            if (packages[i]['name'], packages[i]['version']) in dic_pack.items():
+            if packages[i]['name'] in listaPack:
                 projeto.delete()
-                raise serializers.ValidationError("Pacote com o mesmo nome")
+                raise serializers.ValidationError()
             else:
                 package = PackageRelease.objects.create(name=packages[i]['name'], version=packages[i]['version'], project=projeto)
-                dic_pack[packages[i]['name']] = packages[i]['version']
+                listaPack.append(packages[i]['name'])
                 i += 1
         
         projeto.save()
